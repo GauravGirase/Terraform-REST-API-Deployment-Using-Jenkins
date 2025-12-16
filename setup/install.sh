@@ -33,7 +33,7 @@ DB_USER=$DB_USER
 DB_PASSWORD=$DB_PASSWORD
 EOF
 
-git clone https://github.com/GauravGirase/Terraform-REST-API-Deployment-Using-Jenkins.git -b python-app
+git clone -b flask-api https://github.com/GauravGirase/Terraform-REST-API-Deployment-Using-Jenkins.git
 sleep 20
 cd Terraform-REST-API-Deployment-Using-Jenkins
 pip3 install -r requirements.txt
