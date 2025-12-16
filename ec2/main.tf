@@ -6,6 +6,7 @@ resource "aws_instance" "dev_proj_1_ec2" {
     subnet_id = var.subnet_id
     vpc_security_group_ids = [var.sg_enable_ssh_https, var.ec2_sg_name_for_python_api]
     associate_public_ip_address = var.enable_public_ip_address
+    iam_instance_profile = var.profile_name
     user_data = var.user_data_install_apache
 
     tags = {

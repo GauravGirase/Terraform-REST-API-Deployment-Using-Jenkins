@@ -15,12 +15,19 @@ module "security_group" {
   ec2_sg_name_for_python_api = "SG for EC2 for enabling port 5000"
 }
 
+
+module "iam_role_for_ec2" {
+  source = "./iam"
+}
+
+
 module "ec2" {
   source                   = "./ec2"
   ami_id                   = var.ec2_ami_id
   instance_type            = var.ec2_type
   tag_name                 = "Ubuntu Linux EC2"
   public_key               = var.public_key
+  profile_name             = module.iam_role_for_ec2.aws_iam_instance_profile_name
   subnet_id                = tolist(module.networking.dev_proj_1_public_subnets)[0]
   sg_enable_ssh_https      = module.security_group.sg_ec2_sg_ssh_http_id
   ec2_sg_name_for_python_api     = module.security_group.sg_ec2_for_python_api
@@ -78,4 +85,14 @@ module "rds_db_instance" {
   mysql_username       = "dbuser"
   mysql_password       = var.db_password
   mysql_dbname         = "devprojdb"
+}
+
+module "ssm_manager" {
+  source = "./ssm"
+  rds_endpoint = module.rds_db_instance.endpoint
+  db_name = "devprojdb"
+}
+
+module "secret_manager" {
+  source = "./secrets-manager"
 }
