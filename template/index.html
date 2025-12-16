@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask REST API Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #444;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input, select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            background: #667eea;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: green;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin: 0 0 8px 0;
+            color: #333;
+        }
+
+        .card p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🚀 Flask REST API Dashboard</h1>
+
+<div class="container">
+
+    <h2>➕ Add New User</h2>
+    <form id="insertForm">
+        <div class="form-grid">
+            <div>
+                <label>Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div>
+                <label>Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div>
+                <label>Age</label>
+                <input type="number" id="age" min="1" required>
+            </div>
+            <div>
+                <label>Role</label>
+                <select id="role">
+                    <option value="Developer">Developer</option>
+                    <option value="QA">QA</option>
+                    <option value="Devops">Devops</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" onclick="insertRecord()">Create User</button>
+        <div class="status" id="statusMsg"></div>
+    </form>
+
+    <h2>📋 User Records</h2>
+    <div class="cards" id="dataList"></div>
+
+</div>
+
+<script>
+    function insertRecord() {
+        const payload = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            age: document.getElementById('age').value,
+            role: document.getElementById('role').value
+        };
+
+        fetch('/insert_record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('statusMsg').textContent = data;
+            document.getElementById('insertForm').reset();
+            loadData();
+        });
+    }
+
+    function loadData() {
+        fetch('/data')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('dataList');
+            container.innerHTML = '';
+
+            data.forEach(record => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                card.innerHTML = `
+                    <h3>${record.name}</h3>
+                    <p><strong>ID:</strong> ${record.id}</p>
+                    <p><strong>Email:</strong> ${record.email}</p>
+                    <p><strong>Age:</strong> ${record.age}</p>
+                    <p><strong>Role:</strong> ${record.role}</p>
+                `;
+                container.appendChild(card);
+            });
+        });
+    }
+
+    loadData();
+</script>
+
+</body>
+</html>
